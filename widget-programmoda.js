@@ -1233,7 +1233,9 @@
         inlineBtn.style.justifyContent = 'center';
         inlineBtn.style.alignSelf = 'stretch';
         inlineBtn.style.borderRadius = '0';   // borda quadrada (pedido do lojista)
-        inlineBtn.style.margin = '24px 0 0';   // respiro maior em cima, colado no Comprar
+        // Desktop: colado no COMPRAR. Mobile: precisa de respiro embaixo tambem,
+        // senao os dois botoes ficam grudados.
+        inlineBtn.style.margin = (window.innerWidth < 768) ? '20px 0 14px' : '24px 0 0';
         const buyBtn = document.querySelector('[class*="add-to-cart-button"] button, [class*="buy-button"] button, .vtex-add-to-cart-button-0-x-buttonDataContainer, .js-addtocart, .btn-add-to-cart');
         if (buyBtn) {
             // A VTEX envolve o "Comprar" numa LINHA flex; inserir como irmao
@@ -1251,11 +1253,11 @@
                 // .mt6 (margin-top:24px) acima do botao. Zeramos ele e os pais ate
                 // o nosso botao, para o provador encostar no COMPRAR.
                 try {
-                    _row.style.marginTop = '0'; _row.style.paddingTop = '0';
+                    if (window.innerWidth >= 768) { _row.style.marginTop = '0'; _row.style.paddingTop = '0'; }
                     var _p = buyBtn;
                     for (var _k = 0; _k < 5 && _p && _p !== inlineBtn.parentElement; _k++) {
                         var _mt = parseFloat(window.getComputedStyle(_p).marginTop) || 0;
-                        if (_mt > 6) { _p.style.marginTop = '6px'; }
+                        if (_mt > 6 && window.innerWidth >= 768) { _p.style.marginTop = '6px'; }
                         _p = _p.parentElement;
                     }
                 } catch (e) {}
@@ -2068,9 +2070,37 @@ const fd = new FormData();
     // ─── EXECUTA APENAS EM PÁGINAS DE PRODUTO ────────────────────────────────────
     const isProductPage = window.location.pathname.includes('/products/') || window.location.pathname.includes('/product/') || window.location.pathname.includes('/produtos/') || window.location.pathname.includes('/produto/') || /\/p($|\/)/.test(window.location.pathname) || window.location.pathname.includes('preview.html') || document.querySelector('meta[property="og:type"][content="product"]');
 
-    if (isProductPage) {
-        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
-        else init();
+    // A VTEX e SPA: ao navegar da categoria para o produto NAO ha reload, entao
+    // o init() abaixo nunca rodaria (era preciso dar F5). Observamos a troca de
+    // rota e montamos o provador assim que virar pagina de produto.
+    var _plMontado = false;
+    function plEhProduto() {
+        return /\/p($|\/|\?)/.test(window.location.pathname + window.location.search)
+            || window.location.pathname.indexOf('/produtos/') > -1
+            || !!document.querySelector('meta[property="og:type"][content="product"]');
     }
+    function plTentaMontar() {
+        try {
+            if (_plMontado) {
+                // trocou de produto dentro da SPA: reposiciona o selo
+                if (!document.getElementById('q-modal-ia')) { _plMontado = false; }
+                else return;
+            }
+            if (!plEhProduto()) return;
+            if (document.getElementById('q-modal-ia')) { _plMontado = true; return; }
+            init();
+            _plMontado = true;
+        } catch (e) {}
+    }
+    // roda agora e continua vigiando (cobre SPA, lazy render e voltar/avancar)
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', plTentaMontar);
+    else plTentaMontar();
+    setInterval(plTentaMontar, 900);
+    window.addEventListener('popstate', plTentaMontar);
+    (function () {
+        var _ps = history.pushState, _rs = history.replaceState;
+        history.pushState = function () { var r = _ps.apply(this, arguments); setTimeout(plTentaMontar, 350); return r; };
+        history.replaceState = function () { var r = _rs.apply(this, arguments); setTimeout(plTentaMontar, 350); return r; };
+    })();
 
 })();
