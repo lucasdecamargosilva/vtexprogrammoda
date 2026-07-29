@@ -1088,22 +1088,21 @@
         // Ancora o selo por POSICAO sobre a galeria (nao dentro de um slide):
         // assim ele aparece em todas as fotos e sobrevive ao re-render do React.
         function plGaleria() {
-            var sels = ['.slick-list', '.slick-slider', '[class*="productImagesGallery"]', '[class*="productImage"]', '[class*="carousel"]'];
-            for (var i = 0; i < sels.length; i++) {
-                var els = document.querySelectorAll(sels[i]);
-                for (var j = 0; j < els.length; j++) {
-                    var r = els[j].getBoundingClientRect();
-                    if (r.width >= 300 && r.width <= 900 && r.height > 300
-                        && r.left >= 0 && r.left < window.innerWidth - 100
-                        && els[j].offsetParent !== null) {
-                        var im = els[j].querySelector('img');
-                        var sc = im ? (im.getAttribute('src') || '') : '';
-                        if (/tabela|medida/i.test(sc)) continue;   // pula a tabela de medidas
-                        return els[j];
-                    }
-                }
+            // Ancora na FOTO em si (visivel e dentro da viewport). Os containers
+            // slick se movem/duplicam, por isso mirar neles jogava o selo pra fora.
+            var best = null, area = 0;
+            var imgs = document.querySelectorAll('img');
+            for (var i = 0; i < imgs.length; i++) {
+                var im = imgs[i], r = im.getBoundingClientRect();
+                var sc = im.getAttribute('src') || '';
+                if (/tabela|medida/i.test(sc)) continue;
+                if (r.width < 320 || r.height < 320) continue;
+                if (r.left < 0 || r.left > window.innerWidth - 120) continue;
+                if (im.offsetParent === null) continue;
+                var a = r.width * r.height;
+                if (a > area) { area = a; best = im; }
             }
-            return null;
+            return best;
         }
         function plPosicionaSelo() {
             var g = plGaleria();
@@ -1157,12 +1156,7 @@
         // VTEX renderiza a galeria via React depois do load: tenta por ate 20s
         // e segue vigiando para o caso de re-render.
         var _tries = 0;
-        var _iv = setInterval(function () {
-            try {
-                if (!openBtn.isConnected) tryPlaceTriggerBtn();
-                if (++_tries > 200) clearInterval(_iv);
-            } catch (e) {}
-        }, 1000);
+        setInterval(function () { try { plPosicionaSelo(); } catch (e) {} }, 800);
 
         if (!tryPlaceTriggerBtn()) {
             // Container não pronto ainda (ex: após F5 no mobile).
@@ -1228,7 +1222,7 @@
         inlineBtn.style.justifyContent = 'center';
         inlineBtn.style.alignSelf = 'stretch';
         inlineBtn.style.borderRadius = '0';   // borda quadrada (pedido do lojista)
-        inlineBtn.style.margin = '18px 0 6px';   // respiro em cima, colado no Comprar
+        inlineBtn.style.margin = '12px 0 0';   // respiro em cima, colado no Comprar
         const buyBtn = document.querySelector('[class*="add-to-cart-button"] button, [class*="buy-button"] button, .vtex-add-to-cart-button-0-x-buttonDataContainer, .js-addtocart, .btn-add-to-cart');
         if (buyBtn) {
             // A VTEX envolve o "Comprar" numa LINHA flex; inserir como irmao
