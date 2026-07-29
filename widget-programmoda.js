@@ -1111,9 +1111,15 @@
 
         // Mantem o selo no ar: se o tema re-renderizar a galeria (troca de foto),
         // o botao e reinserido em vez de sumir.
-        setInterval(function () {
-            try { if (!openBtn.isConnected) tryPlaceTriggerBtn(); } catch (e) {}
-        }, 1200);
+        // VTEX renderiza a galeria via React depois do load: tenta por ate 20s
+        // e segue vigiando para o caso de re-render.
+        var _tries = 0;
+        var _iv = setInterval(function () {
+            try {
+                if (!openBtn.isConnected) tryPlaceTriggerBtn();
+                if (++_tries > 200) clearInterval(_iv);
+            } catch (e) {}
+        }, 1000);
 
         if (!tryPlaceTriggerBtn()) {
             // Container não pronto ainda (ex: após F5 no mobile).
@@ -1181,7 +1187,17 @@
         inlineBtn.style.borderRadius = '0';   // borda quadrada (pedido do lojista)
         const buyBtn = document.querySelector('[class*="add-to-cart-button"] button, [class*="buy-button"] button, .vtex-add-to-cart-button-0-x-buttonDataContainer, .js-addtocart, .btn-add-to-cart');
         if (buyBtn) {
-            buyBtn.parentNode.insertBefore(inlineBtn, buyBtn);
+            // A VTEX envolve o "Comprar" numa LINHA flex; inserir como irmao
+            // deixava o botao AO LADO. Subimos ate sair dessa linha para ficar ACIMA.
+            var _row = buyBtn.parentElement;
+            for (var _i = 0; _i < 4 && _row && _row.parentElement; _i++) {
+                var _d = window.getComputedStyle(_row).display;
+                var _dir = window.getComputedStyle(_row).flexDirection;
+                if ((_d === 'flex' || _d === 'inline-flex') && _dir.indexOf('row') === 0) { _row = _row.parentElement; }
+                else { break; }
+            }
+            if (_row && _row.parentElement) _row.parentElement.insertBefore(inlineBtn, _row);
+            else buyBtn.parentNode.insertBefore(inlineBtn, buyBtn);
         } else {
             const variantsContainer = document.querySelector('.js-product-variants');
             if (variantsContainer) {
