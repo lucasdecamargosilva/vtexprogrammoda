@@ -1085,7 +1085,43 @@
 
         const imgContainers = ['[class*="carousel"]', '[class*="productImagesGallery"]', '.product-image-column', '[data-store^="product-image-"]', '.product__media-wrapper', '.product-gallery__media', '.product__media', '.product-image-main', '.product-media-container', '[data-media-id]', '.product__media-item', '.product-gallery', '.product-single__media', '.media-gallery'];
 
+        // Ancora o selo por POSICAO sobre a galeria (nao dentro de um slide):
+        // assim ele aparece em todas as fotos e sobrevive ao re-render do React.
+        function plGaleria() {
+            var sels = ['[class*="carousel"]', '[class*="productImagesGallery"]', '[class*="productImage"]'];
+            for (var i = 0; i < sels.length; i++) {
+                var els = document.querySelectorAll(sels[i]);
+                for (var j = 0; j < els.length; j++) {
+                    var r = els[j].getBoundingClientRect();
+                    if (r.width > 180 && r.height > 180) return els[j];
+                }
+            }
+            return null;
+        }
+        function plPosicionaSelo() {
+            var g = plGaleria();
+            if (!g) return false;
+            if (!openBtn.isConnected) document.body.appendChild(openBtn);
+            var r = g.getBoundingClientRect();
+            var mob = window.innerWidth < 768;
+            var tam = mob ? 66 : 72;
+            openBtn.style.position = 'fixed';
+            openBtn.style.zIndex = '9999';
+            openBtn.style.width = tam + 'px';
+            openBtn.style.height = tam + 'px';
+            if (r.bottom < 40 || r.top > window.innerHeight - 40) { openBtn.style.visibility = 'hidden'; }
+            else {
+                openBtn.style.visibility = 'visible';
+                openBtn.style.top = (r.top + 14) + 'px';
+                openBtn.style.left = (r.right - tam - 14) + 'px';
+            }
+            return true;
+        }
+        window.addEventListener('scroll', plPosicionaSelo, { passive: true });
+        window.addEventListener('resize', plPosicionaSelo);
+
         function tryPlaceTriggerBtn() {
+            if (plPosicionaSelo()) return true;
             // 1ª prioridade: container que tenha <img> dentro (evita cair em slide de vídeo)
             for (const sel of imgContainers) {
                 const els = document.querySelectorAll(sel);
@@ -1185,6 +1221,7 @@
         inlineBtn.style.justifyContent = 'center';
         inlineBtn.style.alignSelf = 'stretch';
         inlineBtn.style.borderRadius = '0';   // borda quadrada (pedido do lojista)
+        inlineBtn.style.margin = '18px 0 8px';   // respiro em cima, colado no Comprar
         const buyBtn = document.querySelector('[class*="add-to-cart-button"] button, [class*="buy-button"] button, .vtex-add-to-cart-button-0-x-buttonDataContainer, .js-addtocart, .btn-add-to-cart');
         if (buyBtn) {
             // A VTEX envolve o "Comprar" numa LINHA flex; inserir como irmao
