@@ -1236,7 +1236,18 @@
             }
             if (_row && _row.parentElement) {
                 _row.parentElement.insertBefore(inlineBtn, _row);
-                try { _row.style.marginTop = '0'; _row.style.paddingTop = '0'; } catch (e) {}
+                // O espaco de 24px vem de um wrapper da VTEX com a classe utilitaria
+                // .mt6 (margin-top:24px) acima do botao. Zeramos ele e os pais ate
+                // o nosso botao, para o provador encostar no COMPRAR.
+                try {
+                    _row.style.marginTop = '0'; _row.style.paddingTop = '0';
+                    var _p = buyBtn;
+                    for (var _k = 0; _k < 5 && _p && _p !== inlineBtn.parentElement; _k++) {
+                        var _mt = parseFloat(window.getComputedStyle(_p).marginTop) || 0;
+                        if (_mt > 6) { _p.style.marginTop = '6px'; }
+                        _p = _p.parentElement;
+                    }
+                } catch (e) {}
             }
             else buyBtn.parentNode.insertBefore(inlineBtn, buyBtn);
         } else {
