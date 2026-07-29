@@ -1093,7 +1093,9 @@
                 var els = document.querySelectorAll(sels[i]);
                 for (var j = 0; j < els.length; j++) {
                     var r = els[j].getBoundingClientRect();
-                    if (r.width >= 300 && r.width <= 900 && r.height > 300) {
+                    if (r.width >= 300 && r.width <= 900 && r.height > 300
+                        && r.left >= 0 && r.left < window.innerWidth - 100
+                        && els[j].offsetParent !== null) {
                         var im = els[j].querySelector('img');
                         var sc = im ? (im.getAttribute('src') || '') : '';
                         if (/tabela|medida/i.test(sc)) continue;   // pula a tabela de medidas
@@ -1226,7 +1228,7 @@
         inlineBtn.style.justifyContent = 'center';
         inlineBtn.style.alignSelf = 'stretch';
         inlineBtn.style.borderRadius = '0';   // borda quadrada (pedido do lojista)
-        inlineBtn.style.margin = '18px 0 0';   // respiro em cima, colado no Comprar
+        inlineBtn.style.margin = '18px 0 6px';   // respiro em cima, colado no Comprar
         const buyBtn = document.querySelector('[class*="add-to-cart-button"] button, [class*="buy-button"] button, .vtex-add-to-cart-button-0-x-buttonDataContainer, .js-addtocart, .btn-add-to-cart');
         if (buyBtn) {
             // A VTEX envolve o "Comprar" numa LINHA flex; inserir como irmao
@@ -1238,7 +1240,10 @@
                 if ((_d === 'flex' || _d === 'inline-flex') && _dir.indexOf('row') === 0) { _row = _row.parentElement; }
                 else { break; }
             }
-            if (_row && _row.parentElement) _row.parentElement.insertBefore(inlineBtn, _row);
+            if (_row && _row.parentElement) {
+                _row.parentElement.insertBefore(inlineBtn, _row);
+                try { _row.style.marginTop = '0'; _row.style.paddingTop = '0'; } catch (e) {}
+            }
             else buyBtn.parentNode.insertBefore(inlineBtn, buyBtn);
         } else {
             const variantsContainer = document.querySelector('.js-product-variants');
