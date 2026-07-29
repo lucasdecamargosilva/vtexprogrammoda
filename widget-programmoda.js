@@ -1083,7 +1083,7 @@
         openBtn.innerHTML = stampImageHTML;
 
 
-        const imgContainers = ['[class*="productImagesGallery"]', '[class*="carousel"]', '.product-image-column', '[data-store^="product-image-"]', '.product__media-wrapper', '.product-gallery__media', '.product__media', '.product-image-main', '.product-media-container', '[data-media-id]', '.product__media-item', '.product-gallery', '.product-single__media', '.media-gallery'];
+        const imgContainers = ['[class*="carousel"]', '[class*="productImagesGallery"]', '.product-image-column', '[data-store^="product-image-"]', '.product__media-wrapper', '.product-gallery__media', '.product__media', '.product-image-main', '.product-media-container', '[data-media-id]', '.product__media-item', '.product-gallery', '.product-single__media', '.media-gallery'];
 
         function tryPlaceTriggerBtn() {
             // 1ª prioridade: container que tenha <img> dentro (evita cair em slide de vídeo)
@@ -1171,6 +1171,13 @@
 
         // Posiciona acima do botão de compra
         // VTEX: o botao de compra e um <button> dentro do bloco add-to-cart / buy-button
+        // VTEX usa flex no bloco de compra: sem width:100% o botao encolhe e cola a esquerda
+        inlineBtn.style.width = '100%';
+        inlineBtn.style.boxSizing = 'border-box';
+        inlineBtn.style.display = 'flex';
+        inlineBtn.style.alignItems = 'center';
+        inlineBtn.style.justifyContent = 'center';
+        inlineBtn.style.alignSelf = 'stretch';
         const buyBtn = document.querySelector('[class*="add-to-cart-button"] button, [class*="buy-button"] button, .vtex-add-to-cart-button-0-x-buttonDataContainer, .js-addtocart, .btn-add-to-cart');
         if (buyBtn) {
             buyBtn.parentNode.insertBefore(inlineBtn, buyBtn);
