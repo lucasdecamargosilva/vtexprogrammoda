@@ -1235,7 +1235,7 @@
         inlineBtn.style.borderRadius = '0';   // borda quadrada (pedido do lojista)
         // Desktop: colado no COMPRAR. Mobile: precisa de respiro embaixo tambem,
         // senao os dois botoes ficam grudados.
-        inlineBtn.style.margin = (window.innerWidth < 768) ? '20px 0 14px' : '24px 0 0';
+        inlineBtn.style.margin = '20px 0 0';   // mesmo espacamento no mobile e no desktop
         const buyBtn = document.querySelector('[class*="add-to-cart-button"] button, [class*="buy-button"] button, .vtex-add-to-cart-button-0-x-buttonDataContainer, .js-addtocart, .btn-add-to-cart');
         if (buyBtn) {
             // A VTEX envolve o "Comprar" numa LINHA flex; inserir como irmao
@@ -1253,11 +1253,11 @@
                 // .mt6 (margin-top:24px) acima do botao. Zeramos ele e os pais ate
                 // o nosso botao, para o provador encostar no COMPRAR.
                 try {
-                    if (window.innerWidth >= 768) { _row.style.marginTop = '0'; _row.style.paddingTop = '0'; }
+                    _row.style.marginTop = (window.innerWidth < 768) ? '6px' : '0'; _row.style.paddingTop = '0';
                     var _p = buyBtn;
                     for (var _k = 0; _k < 5 && _p && _p !== inlineBtn.parentElement; _k++) {
                         var _mt = parseFloat(window.getComputedStyle(_p).marginTop) || 0;
-                        if (_mt > 6 && window.innerWidth >= 768) { _p.style.marginTop = '6px'; }
+                        if (_mt > 6) { _p.style.marginTop = '6px'; }
                         _p = _p.parentElement;
                     }
                 } catch (e) {}
