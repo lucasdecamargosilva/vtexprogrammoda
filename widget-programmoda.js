@@ -1088,12 +1088,17 @@
         // Ancora o selo por POSICAO sobre a galeria (nao dentro de um slide):
         // assim ele aparece em todas as fotos e sobrevive ao re-render do React.
         function plGaleria() {
-            var sels = ['[class*="carousel"]', '[class*="productImagesGallery"]', '[class*="productImage"]'];
+            var sels = ['.slick-list', '.slick-slider', '[class*="productImagesGallery"]', '[class*="productImage"]', '[class*="carousel"]'];
             for (var i = 0; i < sels.length; i++) {
                 var els = document.querySelectorAll(sels[i]);
                 for (var j = 0; j < els.length; j++) {
                     var r = els[j].getBoundingClientRect();
-                    if (r.width > 180 && r.height > 180) return els[j];
+                    if (r.width > 180 && r.height > 180 && r.width < 1200) {
+                        var im = els[j].querySelector('img');
+                        var sc = im ? (im.getAttribute('src') || '') : '';
+                        if (/tabela|medida/i.test(sc)) continue;   // pula a tabela de medidas
+                        return els[j];
+                    }
                 }
             }
             return null;
@@ -1221,7 +1226,7 @@
         inlineBtn.style.justifyContent = 'center';
         inlineBtn.style.alignSelf = 'stretch';
         inlineBtn.style.borderRadius = '0';   // borda quadrada (pedido do lojista)
-        inlineBtn.style.margin = '18px 0 8px';   // respiro em cima, colado no Comprar
+        inlineBtn.style.margin = '18px 0 2px';   // respiro em cima, colado no Comprar
         const buyBtn = document.querySelector('[class*="add-to-cart-button"] button, [class*="buy-button"] button, .vtex-add-to-cart-button-0-x-buttonDataContainer, .js-addtocart, .btn-add-to-cart');
         if (buyBtn) {
             // A VTEX envolve o "Comprar" numa LINHA flex; inserir como irmao
