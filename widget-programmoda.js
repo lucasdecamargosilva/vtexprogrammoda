@@ -1093,7 +1093,7 @@
                 var els = document.querySelectorAll(sels[i]);
                 for (var j = 0; j < els.length; j++) {
                     var r = els[j].getBoundingClientRect();
-                    if (r.width > 180 && r.height > 180 && r.width < 1200) {
+                    if (r.width >= 300 && r.width <= 900 && r.height > 300) {
                         var im = els[j].querySelector('img');
                         var sc = im ? (im.getAttribute('src') || '') : '';
                         if (/tabela|medida/i.test(sc)) continue;   // pula a tabela de medidas
@@ -1226,7 +1226,7 @@
         inlineBtn.style.justifyContent = 'center';
         inlineBtn.style.alignSelf = 'stretch';
         inlineBtn.style.borderRadius = '0';   // borda quadrada (pedido do lojista)
-        inlineBtn.style.margin = '18px 0 2px';   // respiro em cima, colado no Comprar
+        inlineBtn.style.margin = '18px 0 0';   // respiro em cima, colado no Comprar
         const buyBtn = document.querySelector('[class*="add-to-cart-button"] button, [class*="buy-button"] button, .vtex-add-to-cart-button-0-x-buttonDataContainer, .js-addtocart, .btn-add-to-cart');
         if (buyBtn) {
             // A VTEX envolve o "Comprar" numa LINHA flex; inserir como irmao
