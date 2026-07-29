@@ -1178,6 +1178,7 @@
         inlineBtn.style.alignItems = 'center';
         inlineBtn.style.justifyContent = 'center';
         inlineBtn.style.alignSelf = 'stretch';
+        inlineBtn.style.borderRadius = '0';   // borda quadrada (pedido do lojista)
         const buyBtn = document.querySelector('[class*="add-to-cart-button"] button, [class*="buy-button"] button, .vtex-add-to-cart-button-0-x-buttonDataContainer, .js-addtocart, .btn-add-to-cart');
         if (buyBtn) {
             buyBtn.parentNode.insertBefore(inlineBtn, buyBtn);
