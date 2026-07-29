@@ -1222,7 +1222,7 @@
         inlineBtn.style.justifyContent = 'center';
         inlineBtn.style.alignSelf = 'stretch';
         inlineBtn.style.borderRadius = '0';   // borda quadrada (pedido do lojista)
-        inlineBtn.style.margin = '12px 0 0';   // respiro em cima, colado no Comprar
+        inlineBtn.style.margin = '24px 0 0';   // respiro maior em cima, colado no Comprar
         const buyBtn = document.querySelector('[class*="add-to-cart-button"] button, [class*="buy-button"] button, .vtex-add-to-cart-button-0-x-buttonDataContainer, .js-addtocart, .btn-add-to-cart');
         if (buyBtn) {
             // A VTEX envolve o "Comprar" numa LINHA flex; inserir como irmao
