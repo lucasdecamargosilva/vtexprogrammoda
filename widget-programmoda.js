@@ -1115,7 +1115,18 @@
             openBtn.style.zIndex = '9999';
             openBtn.style.width = tam + 'px';
             openBtn.style.height = tam + 'px';
-            if (r.bottom < 40 || r.top > window.innerHeight - 40) { openBtn.style.visibility = 'hidden'; }
+            // Altura do header fixo da loja: o selo nao pode passar por cima dele.
+            var _hb = 0;
+            try {
+                var hs = document.querySelectorAll('header, [class*="header"], [class*="Header"]');
+                for (var k = 0; k < hs.length; k++) {
+                    var hr = hs[k].getBoundingClientRect();
+                    var pos = window.getComputedStyle(hs[k]).position;
+                    if ((pos === 'fixed' || pos === 'sticky') && hr.top <= 8 && hr.height > 20 && hr.bottom > _hb) _hb = hr.bottom;
+                }
+            } catch (e) {}
+            var _topSelo = r.top + 14;
+            if (r.bottom < 40 || r.top > window.innerHeight - 40 || _topSelo < _hb + 6) { openBtn.style.visibility = 'hidden'; }
             else {
                 openBtn.style.visibility = 'visible';
                 openBtn.style.top = (r.top + 14) + 'px';
