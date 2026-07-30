@@ -1268,12 +1268,12 @@
                 return true;
             } catch (e) { return false; }
         }
-        if (!plInsereInline()) {
-            var _tentIn = 0;
-            var _ivIn = setInterval(function () {
-                if (plInsereInline() || ++_tentIn > 40) clearInterval(_ivIn);
-            }, 800);
-        }
+        // Vigia PERMANENTE (igual ao selo): alem de esperar o React montar o
+        // "Comprar", o React re-renderiza a area de compra e ARRANCA o nosso
+        // botao. Se pararmos no primeiro sucesso, ele some e nao volta -- era
+        // por isso que so aparecia depois do F5. Nunca limpar este intervalo.
+        plInsereInline();
+        setInterval(plInsereInline, 800);
         const genBtn      = document.getElementById('q-btn-generate');
         const nextBtn     = null; // single-step flow — no next button
         const phoneStep   = null;
