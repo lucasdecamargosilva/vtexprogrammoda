@@ -1236,38 +1236,43 @@
         // Desktop: colado no COMPRAR. Mobile: precisa de respiro embaixo tambem,
         // senao os dois botoes ficam grudados.
         inlineBtn.style.margin = '20px 0 0';   // mesmo espacamento no mobile e no desktop
-        const buyBtn = document.querySelector('[class*="add-to-cart-button"] button, [class*="buy-button"] button, .vtex-add-to-cart-button-0-x-buttonDataContainer, .js-addtocart, .btn-add-to-cart');
-        if (buyBtn) {
-            // A VTEX envolve o "Comprar" numa LINHA flex; inserir como irmao
-            // deixava o botao AO LADO. Subimos ate sair dessa linha para ficar ACIMA.
-            var _row = buyBtn.parentElement;
-            for (var _i = 0; _i < 4 && _row && _row.parentElement; _i++) {
-                var _d = window.getComputedStyle(_row).display;
-                var _dir = window.getComputedStyle(_row).flexDirection;
-                if ((_d === 'flex' || _d === 'inline-flex') && _dir.indexOf('row') === 0) { _row = _row.parentElement; }
-                else { break; }
-            }
-            if (_row && _row.parentElement) {
-                _row.parentElement.insertBefore(inlineBtn, _row);
-                // O espaco de 24px vem de um wrapper da VTEX com a classe utilitaria
-                // .mt6 (margin-top:24px) acima do botao. Zeramos ele e os pais ate
-                // o nosso botao, para o provador encostar no COMPRAR.
-                try {
-                    _row.style.marginTop = (window.innerWidth < 768) ? '6px' : '0'; _row.style.paddingTop = '0';
-                    var _p = buyBtn;
-                    for (var _k = 0; _k < 5 && _p && _p !== inlineBtn.parentElement; _k++) {
-                        var _mt = parseFloat(window.getComputedStyle(_p).marginTop) || 0;
-                        if (_mt > 6) { _p.style.marginTop = '6px'; }
-                        _p = _p.parentElement;
-                    }
-                } catch (e) {}
-            }
-            else buyBtn.parentNode.insertBefore(inlineBtn, buyBtn);
-        } else {
-            const variantsContainer = document.querySelector('.js-product-variants');
-            if (variantsContainer) {
-                variantsContainer.parentNode.insertBefore(inlineBtn, variantsContainer.nextSibling);
-            }
+        // O botao de compra da VTEX e renderizado pelo React DEPOIS do init(), entao
+        // a insercao unica falhava no primeiro acesso (so aparecia apos F5).
+        // Agora tentamos ate o alvo existir.
+        function plInsereInline() {
+            try {
+                if (document.body.contains(inlineBtn)) return true;
+                var buyBtn = document.querySelector('[class*="add-to-cart-button"] button, [class*="buy-button"] button, .vtex-add-to-cart-button-0-x-buttonDataContainer, .js-addtocart, .btn-add-to-cart');
+                if (!buyBtn) return false;
+                var _row = buyBtn.parentElement;
+                for (var _i = 0; _i < 4 && _row && _row.parentElement; _i++) {
+                    var _d = window.getComputedStyle(_row).display;
+                    var _dir = window.getComputedStyle(_row).flexDirection;
+                    if ((_d === 'flex' || _d === 'inline-flex') && _dir.indexOf('row') === 0) { _row = _row.parentElement; }
+                    else { break; }
+                }
+                if (_row && _row.parentElement) {
+                    _row.parentElement.insertBefore(inlineBtn, _row);
+                    try {
+                        _row.style.marginTop = (window.innerWidth < 768) ? '6px' : '0'; _row.style.paddingTop = '0';
+                        var _p = buyBtn;
+                        for (var _k = 0; _k < 5 && _p && _p !== inlineBtn.parentElement; _k++) {
+                            var _mt = parseFloat(window.getComputedStyle(_p).marginTop) || 0;
+                            if (_mt > 6) { _p.style.marginTop = '6px'; }
+                            _p = _p.parentElement;
+                        }
+                    } catch (e) {}
+                } else {
+                    buyBtn.parentNode.insertBefore(inlineBtn, buyBtn);
+                }
+                return true;
+            } catch (e) { return false; }
+        }
+        if (!plInsereInline()) {
+            var _tentIn = 0;
+            var _ivIn = setInterval(function () {
+                if (plInsereInline() || ++_tentIn > 40) clearInterval(_ivIn);
+            }, 800);
         }
         const genBtn      = document.getElementById('q-btn-generate');
         const nextBtn     = null; // single-step flow — no next button
