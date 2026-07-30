@@ -765,7 +765,7 @@
                     <!-- Persistent header (all steps) -->
                     <div id="q-header-provador">
                         <h1>Provador Virtual</h1>
-                        <img src="https://tfcyt2.vtexassets.com/assets/vtex.file-manager-graphql/images/002f8d3d-ce2a-42d9-9155-119975a7886b___3911039ae1ad21966b35efcb8e75b958.png" alt="ARC SUNGLASSES" style="height:48px;width:auto;"/>
+                        <img src="https://tfcyt2.vtexassets.com/assets/vtex.file-manager-graphql/images/002f8d3d-ce2a-42d9-9155-119975a7886b___3911039ae1ad21966b35efcb8e75b958.png" alt="Program Moda" style="height:34px;width:auto;"/>
                     </div>
 
                     <!-- Main step -->
