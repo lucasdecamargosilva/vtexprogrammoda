@@ -728,6 +728,23 @@
         }
         .q-powered-footer span { font-size: 9.5px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--c-muted); }
         .q-quantic-logo { height: 20px; opacity: 0.7; }
+
+        /* ─── ALINHAMENTO TIPOGRAFICO COM A LOJA ────────────────────────────
+           A familia ja era herdada (Gotham), mas o PESO e o TRACKING vinham do
+           template de oculos: titulo 400/4px e botao 400/3px contra 700/normal
+           do site. Isso lia como "outra fonte". Aqui reaproximamos do site.    */
+        #q-modal-ia h1, #q-modal-ia h2, #q-modal-ia h3 {
+            font-weight: 700; letter-spacing: .5px;
+        }
+        #q-modal-ia .q-btn-black {
+            font-weight: 700; letter-spacing: .5px;
+        }
+        /* 'Work Sans' era resto do template de oculos: na maquina de quem tem a
+           fonte instalada o botao renderizava numa familia diferente do site. */
+        .q-btn-inline-provador {
+            font-family: inherit;
+            font-weight: 700; letter-spacing: .4px; font-size: 12.8px;
+        }
     `;
 
 
