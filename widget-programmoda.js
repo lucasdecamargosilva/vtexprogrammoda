@@ -900,7 +900,7 @@
 
     function getMainPrice() {
         // 1) preço exibido na página (vários temas Nuvemshop)
-        var sel = '.js-price-display, [data-product-price], .product__price .price, .js-product-price, .price-display';
+        var sel = '.js-price-display, [data-product-price], .product__price .price, .js-product-price, .price-display, [class*="sellingPriceValue"], [class*="sellingPrice"] [class*="currencyContainer"]';
         var el = document.querySelector(sel);
         if (el) {
             var t = (el.getAttribute('data-product-price') || el.textContent || '').trim();
@@ -919,7 +919,19 @@
     }
 
     function findStoreBuyBtn() {
-        return document.querySelector('.js-addtocart, .btn-add-to-cart, [data-component="product.add-to-cart"], button[type="submit"].js-addtocart');
+        // Nuvemshop (legado)
+        var ns = document.querySelector('.js-addtocart, .btn-add-to-cart, [data-component="product.add-to-cart"], button[type="submit"].js-addtocart');
+        if (ns) return ns;
+        // VTEX IO: bloco add-to-cart / buy-button
+        var v = document.querySelector('[class*="add-to-cart-button"] button, [class*="addToCart"] button, .vtex-add-to-cart-button-0-x-buttonText');
+        if (v) return (v.tagName === 'BUTTON' ? v : (v.closest('button') || v));
+        // VTEX fallback: botão de ação primário rotulado "Comprar"/"Adicionar" (exclui o nosso "Comprar Agora")
+        var btns = document.querySelectorAll('button.vtex-button, button[class*="bg-action-primary"]');
+        for (var i = 0; i < btns.length; i++) {
+            var t = (btns[i].textContent || '').trim().toLowerCase();
+            if (/(comprar|adicionar|sacola|add to cart)/.test(t) && !/agora/.test(t)) return btns[i];
+        }
+        return null;
     }
 
     // Acha o form de produto real (o que tem o input add_to_cart = product_id)
@@ -964,9 +976,14 @@
             clone.submit();
             return;
         }
-        // Fallback: botão nativo da loja
+        // Botão nativo da loja (VTEX IO e temas sem form POST):
+        // fecha nosso overlay pra loja mostrar o minicart/validação de tamanho e clica no "Comprar".
         var sb = findStoreBuyBtn();
-        if (sb) { try { sb.click(); } catch (e) {} }
+        if (sb) {
+            try { var m = document.getElementById('q-modal-ia'); if (m) m.style.display = 'none'; } catch (e) {}
+            try { sb.scrollIntoView({ block: 'center' }); } catch (e) {}
+            try { sb.click(); } catch (e) {}
+        }
     }
 
     // Escassez — número estável por produto (não muda a cada refresh)
