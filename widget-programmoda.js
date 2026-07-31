@@ -374,20 +374,39 @@
         }
         .q-tip-box i { color: var(--c-ink); font-size: 15px; flex-shrink: 0; }
 
-        /* ── Orientações da foto (discretas) ──
-           Uma linha sutil: luz boa · corpo todo · com roupa. A confirmação
-           de que o cliente seguiu acontece ao clicar em "Provar". */
+        /* ── Orientações da foto ──
+           Bloco legível (o cliente PRECISA ver): título curto + 3 regras com
+           ícone. A confirmação de que seguiu acontece ao clicar em "Provar". */
         .q-guide {
-            display: flex; align-items: center; justify-content: center;
-            flex-wrap: wrap; gap: 6px 14px;
-            margin: -6px 0 16px;
-            font-size: 11px; color: var(--c-muted); line-height: 1.3;
+            background: var(--c-surface);
+            border: 1px solid var(--c-line);
+            border-radius: 10px;
+            padding: 12px 14px;
+            margin: 0 0 16px;
         }
-        .q-guide span {
-            display: inline-flex; align-items: center; gap: 5px;
-            white-space: nowrap;
+        .q-guide-title {
+            font-size: 11px; font-weight: 700; letter-spacing: .8px;
+            text-transform: uppercase; color: var(--c-ink);
+            margin-bottom: 10px; text-align: center;
         }
-        .q-guide i { font-size: 13px; opacity: .75; }
+        .q-guide-row {
+            display: flex; align-items: flex-start; justify-content: space-between;
+            gap: 8px;
+        }
+        .q-guide-row > span {
+            flex: 1; min-width: 0;
+            display: flex; flex-direction: column; align-items: center;
+            text-align: center; gap: 5px;
+            font-size: 12.5px; font-weight: 600; color: var(--c-ink);
+            line-height: 1.25;
+        }
+        .q-guide-row > span i {
+            font-size: 21px; color: var(--c-ink); opacity: .9; line-height: 1;
+        }
+        .q-guide-row > span small {
+            display: block; font-size: 10.5px; font-weight: 400;
+            color: var(--c-muted); line-height: 1.3;
+        }
 
         /* ── Diálogo de confirmação (ao clicar em Provar) ── */
         .q-gconf {
@@ -868,9 +887,12 @@
 
                         <!-- Orienta&#231;&#245;es discretas (a confirma&#231;&#227;o vem ao clicar em Provar) -->
                         <div class="q-guide">
-                            <span><i class="ph ph-sun"></i> Luz boa</span>
-                            <span><i class="ph ph-person-simple"></i> Corpo todo</span>
-                            <span><i class="ph ph-t-shirt"></i> Com roupa</span>
+                            <div class="q-guide-title">Para a prova sair perfeita</div>
+                            <div class="q-guide-row">
+                                <span><i class="ph ph-sun"></i>Luz boa<small>sem sombra</small></span>
+                                <span><i class="ph ph-person-simple"></i>Corpo todo<small>de frente</small></span>
+                                <span><i class="ph ph-t-shirt"></i>Com roupa<small>justa ao corpo</small></span>
+                            </div>
                         </div>
 
                         <!-- Face frame -->
