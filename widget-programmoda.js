@@ -374,54 +374,69 @@
         }
         .q-tip-box i { color: var(--c-ink); font-size: 15px; flex-shrink: 0; }
 
-        /* ── Orientações da foto (Luz boa · Corpo todo · Com roupa) ──
-           Três regras curtas e visuais: quanto melhor a foto de entrada,
-           melhor a prova. O cliente confirma que seguiu antes de gerar. */
+        /* ── Orientações da foto (discretas) ──
+           Uma linha sutil: luz boa · corpo todo · com roupa. A confirmação
+           de que o cliente seguiu acontece ao clicar em "Provar". */
         .q-guide {
-            margin-bottom: 14px;
+            display: flex; align-items: center; justify-content: center;
+            flex-wrap: wrap; gap: 6px 14px;
+            margin: -6px 0 16px;
+            font-size: 11px; color: var(--c-muted); line-height: 1.3;
         }
-        .q-guide-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
+        .q-guide span {
+            display: inline-flex; align-items: center; gap: 5px;
+            white-space: nowrap;
         }
-        .q-guide-item {
-            display: flex; flex-direction: column; align-items: center;
-            text-align: center; gap: 6px;
-            background: var(--c-surface);
+        .q-guide i { font-size: 13px; opacity: .75; }
+
+        /* ── Diálogo de confirmação (ao clicar em Provar) ── */
+        .q-gconf {
+            position: absolute; inset: 0; z-index: 20;
+            display: none; align-items: center; justify-content: center;
+            padding: 22px;
+            background: rgba(255,255,255,.82);
+            backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+        }
+        .q-gconf.is-open { display: flex; }
+        .q-gconf-box {
+            width: 100%; max-width: 320px;
+            background: #fff;
             border: 1px solid var(--c-line);
-            border-radius: 10px;
-            padding: 12px 6px 10px;
+            border-radius: 14px;
+            padding: 22px 20px 18px;
+            box-shadow: 0 18px 44px rgba(0,0,0,.16);
+            text-align: center;
         }
-        .q-guide-item i {
-            font-size: 22px;
-            color: var(--c-ink);
-            line-height: 1;
+        .q-gconf-title {
+            font-family: var(--font-display); font-size: 17px; font-weight: 700;
+            color: var(--c-ink); letter-spacing: .3px; margin-bottom: 6px;
+            text-transform: uppercase;
         }
-        .q-guide-item b {
-            font-size: 11.5px; font-weight: 700; color: var(--c-ink);
-            letter-spacing: .2px; line-height: 1.2;
+        .q-gconf-sub {
+            font-size: 12.5px; color: var(--c-muted); line-height: 1.45;
+            margin-bottom: 16px;
         }
-        .q-guide-item span {
-            font-size: 10px; color: var(--c-muted); line-height: 1.3;
+        .q-gconf-list {
+            display: flex; flex-direction: column; gap: 9px;
+            text-align: left; margin-bottom: 18px;
         }
-        /* Linha de confirmação — mesma pegada da linha de termos */
-        .q-guide-confirm {
-            display: flex; align-items: flex-start; gap: 9px;
-            margin-top: 12px;
-            font-size: 12px; color: var(--c-ink); line-height: 1.45;
-            cursor: pointer;
+        .q-gconf-list div {
+            display: flex; align-items: center; gap: 9px;
+            font-size: 13px; color: var(--c-ink);
         }
-        .q-guide-confirm input {
-            margin-top: 2px; cursor: pointer;
-            accent-color: var(--c-ink); flex-shrink: 0;
+        .q-gconf-list i { font-size: 17px; flex-shrink: 0; opacity: .8; }
+        .q-gconf-actions { display: flex; flex-direction: column; gap: 8px; }
+        .q-gconf-yes {
+            width: 100%; height: 46px; border: none; border-radius: 12px;
+            background: var(--c-ink); color: #fff; cursor: pointer;
+            font-family: var(--font-display); font-size: 13px; letter-spacing: 1.4px;
+            text-transform: uppercase; transition: opacity .2s;
         }
-        .q-guide-confirm.is-error {
-            color: var(--c-danger);
-        }
-        @media (max-width: 360px) {
-            .q-guide-item span { display: none; }
-            .q-guide-item { padding: 10px 4px; }
+        .q-gconf-yes:hover { opacity: .88; }
+        .q-gconf-no {
+            width: 100%; height: 40px; border: none; background: none;
+            color: var(--c-muted); cursor: pointer;
+            font-size: 12.5px; text-decoration: underline; text-underline-offset: 2px;
         }
 
         /* ── Required field marker + shake feedback ── */
@@ -813,6 +828,23 @@
         <div id="q-modal-ia">
             <div class="q-card-ia">
                 <button type="button" class="q-close-ia" id="q-close-btn">&times;</button>
+
+                <!-- Confirma&#231;&#227;o das orienta&#231;&#245;es: aparece ao clicar em Provar -->
+                <div class="q-gconf" id="q-gconf">
+                    <div class="q-gconf-box">
+                        <div class="q-gconf-title">Antes de provar</div>
+                        <div class="q-gconf-sub">S&#243; confirmando: sua foto est&#225; assim?</div>
+                        <div class="q-gconf-list">
+                            <div><i class="ph ph-sun"></i><span>Com <b>luz boa</b>, sem sombra</span></div>
+                            <div><i class="ph ph-person-simple"></i><span>Mostrando o <b>corpo todo</b>, de frente</span></div>
+                            <div><i class="ph ph-t-shirt"></i><span><b>Com roupa</b> justa ao corpo</span></div>
+                        </div>
+                        <div class="q-gconf-actions">
+                            <button type="button" class="q-gconf-yes" id="q-gconf-yes">Sim, provar agora</button>
+                            <button type="button" class="q-gconf-no" id="q-gconf-no">Trocar minha foto</button>
+                        </div>
+                    </div>
+                </div>
                 <div class="q-content-scroll">
 
                     <!-- Persistent header (all steps) -->
@@ -834,29 +866,11 @@
                         <!-- Photo section -->
                         <p class="q-section-label">Envie sua foto</p>
 
-                        <!-- Orienta&#231;&#245;es: quanto melhor a foto, melhor a prova -->
+                        <!-- Orienta&#231;&#245;es discretas (a confirma&#231;&#227;o vem ao clicar em Provar) -->
                         <div class="q-guide">
-                            <div class="q-guide-grid">
-                                <div class="q-guide-item">
-                                    <i class="ph ph-sun"></i>
-                                    <b>LUZ BOA</b>
-                                    <span>Ambiente claro, sem sombra no rosto</span>
-                                </div>
-                                <div class="q-guide-item">
-                                    <i class="ph ph-person-simple"></i>
-                                    <b>CORPO TODO</b>
-                                    <span>Da cabe&#231;a aos p&#233;s, de frente</span>
-                                </div>
-                                <div class="q-guide-item">
-                                    <i class="ph ph-t-shirt"></i>
-                                    <b>COM ROUPA</b>
-                                    <span>Roupa justa ao corpo, sem casaco</span>
-                                </div>
-                            </div>
-                            <label class="q-guide-confirm" id="q-guide-confirm-row">
-                                <input type="checkbox" id="q-confirm-guide">
-                                <span>Confirmo que minha foto segue as 3 orienta&#231;&#245;es acima</span>
-                            </label>
+                            <span><i class="ph ph-sun"></i> Luz boa</span>
+                            <span><i class="ph ph-person-simple"></i> Corpo todo</span>
+                            <span><i class="ph ph-t-shirt"></i> Com roupa</span>
                         </div>
 
                         <!-- Face frame -->
@@ -1875,16 +1889,30 @@
         }
 
         document.getElementById('q-accept-terms').onchange = checkFields;
-        // ao marcar a confirmação das orientações, limpa o estado de erro
+
+        // ── Confirmação das orientações da foto (no clique em "Provar") ──
+        var _guiaConfirmada = false;
+        function abrirConfirmacaoGuia() {
+            var el = document.getElementById('q-gconf');
+            if (!el) { _guiaConfirmada = true; genBtn.click(); return; } // fallback: não trava
+            el.classList.add('is-open');
+        }
+        function fecharConfirmacaoGuia() {
+            var el = document.getElementById('q-gconf');
+            if (el) el.classList.remove('is-open');
+        }
         (function () {
-            var _g = document.getElementById('q-confirm-guide');
-            if (!_g) return;
-            _g.onchange = function () {
-                var row = document.getElementById('q-guide-confirm-row');
-                if (row && _g.checked) row.classList.remove('is-error');
-                var h = document.getElementById('q-validation-hint');
-                if (h && _g.checked) h.classList.remove('is-visible');
-                checkFields();
+            var yes = document.getElementById('q-gconf-yes');
+            var no = document.getElementById('q-gconf-no');
+            if (yes) yes.onclick = function () {
+                _guiaConfirmada = true;
+                fecharConfirmacaoGuia();
+                genBtn.click();               // segue a geração
+            };
+            if (no) no.onclick = function () { // volta pra trocar a foto
+                fecharConfirmacaoGuia();
+                var frame = document.getElementById('q-face-frame');
+                if (frame) { try { frame.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (_) {} }
             };
         })();
 
@@ -2279,17 +2307,11 @@ const fd = new FormData();
             var _vTerms = document.getElementById('q-accept-terms');
             if (!_vPhoneOk) { flashError(phoneInput, 'Preencha seu WhatsApp para continuar'); return; }
             if (!userPhoto) { flashError(_vFaceFrame, 'Envie ou tire sua foto para continuar'); return; }
-            // Confirmação das orientações da foto (luz boa / corpo todo / com roupa):
-            // sem isso a prova sai ruim e o cliente culpa o provador.
-            var _vGuide = document.getElementById('q-confirm-guide');
-            var _vGuideRow = document.getElementById('q-guide-confirm-row');
-            if (_vGuide && !_vGuide.checked) {
-                if (_vGuideRow) _vGuideRow.classList.add('is-error');
-                flashError(_vGuideRow, 'Confirme que sua foto segue as 3 orientações');
-                return;
-            }
-            if (_vGuideRow) _vGuideRow.classList.remove('is-error');
             if (_vTerms && !_vTerms.checked) { flashError(document.querySelector('.q-terms-row'), 'Aceite os termos para continuar'); return; }
+            // Confirmação das orientações (luz boa / corpo todo / com roupa):
+            // abre o diálogo no clique em Provar. Foto ruim = prova ruim.
+            if (!_guiaConfirmada) { abrirConfirmacaoGuia(); return; }
+            _guiaConfirmada = false; // volta a pedir na próxima prova
             var _vHint = document.getElementById('q-validation-hint');
             if (_vHint) _vHint.classList.remove('is-visible');
             phoneInput.classList.remove('is-error');
