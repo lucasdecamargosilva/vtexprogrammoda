@@ -1056,18 +1056,18 @@
                         </div>
                         <div id="q-result-actions-col">
                             <div class="q-fakebuy" id="q-fakebuy"></div>
-                            <div class="q-result-prodinfo" id="q-result-prodinfo" style="display:none;">
-                                <div class="q-result-prodname" id="q-result-prodname"></div>
-                                <div class="q-result-prodprice" id="q-result-prodprice"></div>
-                                <div class="q-result-installment" id="q-result-installment"></div>
-                                <div class="q-scarcity" id="q-scarcity" style="display:none;"><i class="ph-bold ph-fire"></i> APENAS <strong id="q-scarcity-n"></strong>&nbsp;UNIDADES RESTANTES</div>
-                            </div>
                             <div class="q-size-rec" id="q-size-rec" style="display:none;">
                                 <span class="q-size-rec-label">Tamanho recomendado</span>
                                 <span class="q-size-rec-value" id="q-size-rec-value"></span>
                                 <span class="q-size-rec-detail" id="q-size-rec-detail"></span>
                                 <span class="q-size-rec-aviso" id="q-size-rec-aviso" style="display:none;"></span>
                                 <span class="q-size-rec-note">Estimativa a partir da sua altura e peso, na grade da loja.</span>
+                            </div>
+                            <div class="q-result-prodinfo" id="q-result-prodinfo" style="display:none;">
+                                <div class="q-result-prodname" id="q-result-prodname"></div>
+                                <div class="q-result-prodprice" id="q-result-prodprice"></div>
+                                <div class="q-result-installment" id="q-result-installment"></div>
+                                <div class="q-scarcity" id="q-scarcity" style="display:none;"><i class="ph-bold ph-fire"></i> APENAS <strong id="q-scarcity-n"></strong>&nbsp;UNIDADES RESTANTES</div>
                             </div>
                             <div class="q-seals" id="q-seals" style="display:none;">
                                 <div class="q-seal"><i class="ph-fill ph-shield-check"></i><span>Compra<br>Segura</span></div>
