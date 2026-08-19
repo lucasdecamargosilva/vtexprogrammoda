@@ -394,12 +394,12 @@
             justify-content: space-between; gap: 10px;
         }
         .q-size-rec-label {
-            font-size: 9.5px; font-weight: 700; letter-spacing: 1.6px;
-            text-transform: uppercase; color: var(--c-ink); white-space: nowrap;
+            font-size: 12.5px; font-weight: 600; letter-spacing: 0.2px;
+            color: var(--c-ink); white-space: nowrap;
         }
         .q-size-rec-value {
-            font-family: var(--font-display); font-size: 19px; font-weight: 400;
-            letter-spacing: 0.5px; color: var(--c-ink); line-height: 1; white-space: nowrap;
+            font-family: var(--font-body); font-size: 26px; font-weight: 800;
+            letter-spacing: -0.3px; color: var(--c-ink); line-height: 1; white-space: nowrap;
         }
         .q-size-rec-aviso {
             display: block; font-size: 10.5px; color: var(--c-danger);
