@@ -385,29 +385,29 @@
 
         /* ── Tamanho recomendado (tela de resultado) ── */
         .q-size-rec {
-            border: 1.5px solid var(--c-ink); border-radius: 14px;
-            padding: 14px 16px; margin-bottom: 10px; text-align: left;
+            border: 1px solid var(--c-line); border-radius: 10px;
+            background: var(--c-surface);
+            padding: 8px 11px; margin-bottom: 8px; text-align: left;
+        }
+        .q-size-rec-top {
+            display: flex; align-items: baseline;
+            justify-content: space-between; gap: 10px;
         }
         .q-size-rec-label {
-            display: block; font-size: 10px; font-weight: 600; letter-spacing: 2px;
-            text-transform: uppercase; color: var(--c-muted); margin-bottom: 5px;
+            font-size: 9.5px; font-weight: 600; letter-spacing: 1.6px;
+            text-transform: uppercase; color: var(--c-muted); white-space: nowrap;
         }
         .q-size-rec-value {
-            display: block; font-family: var(--font-display);
-            font-size: 26px; font-weight: 400; letter-spacing: 1px;
-            color: var(--c-ink); line-height: 1.1;
+            font-family: var(--font-display); font-size: 19px; font-weight: 400;
+            letter-spacing: 0.5px; color: var(--c-ink); line-height: 1; white-space: nowrap;
         }
         .q-size-rec-detail {
-            display: block; font-size: 12px; color: var(--c-muted);
-            margin-top: 6px; line-height: 1.5;
+            display: block; font-size: 10.5px; color: var(--c-muted);
+            margin-top: 4px; line-height: 1.4;
         }
         .q-size-rec-aviso {
-            display: block; font-size: 12px; color: var(--c-danger);
-            font-weight: 600; margin-top: 6px; line-height: 1.45;
-        }
-        .q-size-rec-note {
-            display: block; font-size: 11px; color: var(--c-muted);
-            margin-top: 8px; line-height: 1.45;
+            display: block; font-size: 10.5px; color: var(--c-danger);
+            font-weight: 600; margin-top: 4px; line-height: 1.35;
         }
 
         .q-provas-msg:empty { display: none; }
@@ -1057,11 +1057,12 @@
                         <div id="q-result-actions-col">
                             <div class="q-fakebuy" id="q-fakebuy"></div>
                             <div class="q-size-rec" id="q-size-rec" style="display:none;">
-                                <span class="q-size-rec-label">Tamanho recomendado</span>
-                                <span class="q-size-rec-value" id="q-size-rec-value"></span>
+                                <div class="q-size-rec-top">
+                                    <span class="q-size-rec-label">Tamanho recomendado</span>
+                                    <span class="q-size-rec-value" id="q-size-rec-value"></span>
+                                </div>
                                 <span class="q-size-rec-detail" id="q-size-rec-detail"></span>
                                 <span class="q-size-rec-aviso" id="q-size-rec-aviso" style="display:none;"></span>
-                                <span class="q-size-rec-note">Estimativa a partir da sua altura e peso, na grade da loja.</span>
                             </div>
                             <div class="q-result-prodinfo" id="q-result-prodinfo" style="display:none;">
                                 <div class="q-result-prodname" id="q-result-prodname"></div>
@@ -1285,15 +1286,13 @@
                 var f = pmRecomendacao.faixa;
                 document.getElementById('q-size-rec-value').textContent = pmRecomendacao.tamanho;
                 document.getElementById('q-size-rec-detail').textContent =
-                    'Equivale a busto ' + f.busto[0] + '-' + f.busto[1] + ' cm, cintura '
-                    + f.cintura[0] + '-' + f.cintura[1] + ' cm e quadril '
-                    + f.quadril[0] + '-' + f.quadril[1] + ' cm.';
+                    'Estimado \u00b7 busto ' + f.busto[0] + '-' + f.busto[1]
+                    + ' \u00b7 cintura ' + f.cintura[0] + '-' + f.cintura[1]
+                    + ' \u00b7 quadril ' + f.quadril[0] + '-' + f.quadril[1] + ' cm';
                 var av = document.getElementById('q-size-rec-aviso');
-                av.textContent = pmRecomendacao.fora === 'acima'
-                    ? 'Suas medidas ficam acima da nossa grade \u2014 fale com a loja antes de comprar.'
-                    : (pmRecomendacao.fora === 'abaixo'
-                        ? 'Suas medidas ficam abaixo da nossa grade \u2014 fale com a loja antes de comprar.'
-                        : '');
+                av.textContent = pmRecomendacao.fora
+                    ? 'Fora da nossa grade \u2014 fale com a loja antes de comprar.'
+                    : '';
                 av.style.display = pmRecomendacao.fora ? 'block' : 'none';
                 szBox.style.display = 'block';
             } else {
