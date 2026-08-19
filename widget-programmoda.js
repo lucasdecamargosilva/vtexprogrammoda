@@ -104,67 +104,99 @@
     const WEBHOOK_PIX = 'https://n8n.segredosdodrop.com/webhook/arcsunglasses-pix';
     const WEBHOOK_PIX_STATUS = 'https://n8n.segredosdodrop.com/webhook/arcsunglasses-pix-status';
     const WEBHOOK_CHECK_LIMIT = 'https://n8n.segredosdodrop.com/webhook/programmoda-check-limit';
-    const SIZES_TOP = ['XXP', 'XP', 'P', 'M', 'G', 'XG', 'XXG', '3XG', '4XG', '5XG'];
-    const SIZES_BOTTOM = ['36/XXP', '38/XP', '40/P', '42/M', '44/G', '46/XG', '48/XXG', '50/3XG', '52/4XG', '54/5XG'];
-    const SIZES_BOTTOM_SW = ['XXP', 'XP', 'P', 'M', 'G', 'XG', 'XXG', '3XG', '4XG', '5XG'];
+    /* ─── RECOMENDACAO DE TAMANHO ─────────────────────────────────────
+     * Grade oficial da Programmoda (PP-40 a G4-54), validada pela loja.
+     *
+     * Faixas CONTINUAS: cai no primeiro tamanho cujo teto alcanca a medida. Como
+     * a estimativa devolve decimal e as faixas tem limite inteiro (74-79, 80-85),
+     * tratar as faixas como fechadas abriria um buraco entre 79 e 80 que jogaria
+     * a cliente pro tamanho maximo. Aqui nao existe buraco.
+     *
+     * Desempate: entre medidas divergentes vence a MAIOR (sobra de pano se
+     * ajusta, falta nao).
+     */
+    const PM_SIZE_OBRIGATORIO = true;   // false => altura/peso viram opcionais
 
+    const PM_GRADE = [
+        { label: 'PP-40', busto: [94, 99],   cintura: [74, 79],   quadril: [104, 109], braco: [31, 33] },
+        { label: 'P-42',  busto: [100, 105], cintura: [80, 85],   quadril: [110, 115], braco: [34, 36] },
+        { label: 'M-44',  busto: [106, 111], cintura: [86, 91],   quadril: [116, 121], braco: [37, 39] },
+        { label: 'G-46',  busto: [112, 117], cintura: [92, 97],   quadril: [122, 127], braco: [40, 42] },
+        { label: 'G1-48', busto: [118, 123], cintura: [98, 103],  quadril: [128, 133], braco: [43, 45] },
+        { label: 'G2-50', busto: [124, 129], cintura: [104, 109], quadril: [134, 139], braco: [46, 48] },
+        { label: 'G3-52', busto: [130, 135], cintura: [110, 115], quadril: [140, 145], braco: [49, 51] },
+        { label: 'G4-54', busto: [136, 142], cintura: [116, 122], quadril: [146, 152], braco: [52, 54] }
+    ];
 
-    const GRADE = {
-        regular: [49, 51, 54, 57, 61, 62, 64, 66, 70, 73],
-        oversized: [58, 60, 62, 64, 66, 70, 73, 76, 79, 83],
-        oversizedSS: [58, 61, 63, 67, 70, 74, 78, 82, 87, 92],
-        hoodie: [50, 53, 55, 58, 62, 65, 69, 74, 79, 83],
-        boxyHoodie: [61, 77, 78, 79, 80, 81, 82, 83, 84, 85],
-        puffer: [53, 56, 59, 61, 70, 74, 78, 82, 86, 90],
-        vest: [52, 55, 57, 59, 63, 66, 70, 72, 76, 82],
-        boxyHenley: [54, 56, 58, 64, 66, 68, 70, 76, 78, 84],
-        bottomTailoring: [36, 38, 40, 42, 44, 46, 48, 50, 52, 54],
-        bottomSweat: [36, 38, 40, 42, 44, 46, 48, 50, 52, 54],
-        underwear: [36, 38, 40, 42, 44, 46, 48, 50, 52, 54],
-        quadrilTailoring: [48, 50, 52, 56, 58, 60, 62, 64, 66, 68],
-        quadrilSweat: [48, 50, 52, 54, 56, 58, 60, 62, 64, 66],
-        quadrilUnderwear: [50, 52, 54, 56, 58, 60, 62, 64, 66, 68],
-    };
+    const PM_LIMITES = { alturaMin: 130, alturaMax: 210, pesoMin: 35, pesoMax: 220 };
 
-
-    function detectProduct(name) {
-        const n = name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-        if (/tailoring/.test(n) || /\d\/\d\s*short/.test(n) || /\b(1\/5|2\/5|3\/5|4\/5)\b/.test(n)) return { category: 'bottom', fit: 'tailoring' };
-        if (/underwear|cueca/.test(n)) return { category: 'bottom', fit: 'underwear' };
-        if (/sweatpant|sweatshort|sweat pant|sweat short|calca|bermuda/.test(n)) return { category: 'bottom', fit: 'sweat' };
-        if (/henley/.test(n)) return { category: 'top', fit: 'boxyHenley' };
-        if (/boxy.*(hoodie|crewneck|crew)/.test(n) || /(hoodie|crewneck|crew).*boxy/.test(n)) return { category: 'top', fit: 'boxyHoodie' };
-        if (/puffer|jacket/.test(n)) return { category: 'top', fit: 'puffer' };
-        if (/vest/.test(n)) return { category: 'top', fit: 'vest' };
-        if (/(hoodie|hoodie zip|half zip|crewneck|crew neck)/.test(n) && !/oversized|boxy|short sleeve/.test(n)) return { category: 'top', fit: 'hoodie' };
-        if (/oversized.*(hoodie|crewneck|crew|short sleeve)/.test(n) || /short sleeve.*(hoodie|crewneck)/.test(n)) return { category: 'top', fit: 'oversizedSS' };
-        if (/oversized|boxy tee|2\/4/.test(n)) return { category: 'top', fit: 'oversized' };
-        return { category: 'top', fit: 'regular' };
+    function pmFaixa(campo, v) {
+        if (typeof v !== 'number' || !isFinite(v)) return -1;
+        for (var i = 0; i < PM_GRADE.length; i++) {
+            if (v <= PM_GRADE[i][campo][1]) return i;
+        }
+        return PM_GRADE.length - 1;
     }
+    function pmAbaixoDaGrade(campo, v) { return v < PM_GRADE[0][campo][0]; }
+    function pmAcimaDaGrade(campo, v)  { return v > PM_GRADE[PM_GRADE.length - 1][campo][1]; }
 
-
-    function estimarTorax(altura, peso) {
+    function pmEstimarMedidas(altura, peso) {
         if (altura < 3) altura *= 100;
-        let circ = 0.65 * peso + 56;
-        const imc = peso / Math.pow(altura / 100, 2);
-        if (imc > 30) circ += 4; else if (imc > 25) circ += 2;
-        return circ;
+        var imc = peso / Math.pow(altura / 100, 2);
+        var dh = altura - 165;
+        return {
+            cintura: 2.10 * imc + 0.05 * dh + 24,
+            busto:   2.05 * imc + 0.08 * dh + 43,
+            quadril: 1.80 * imc + 0.06 * dh + 58
+        };
     }
 
-
-    function findClosest(arr, val) {
-        let idx = 0, minDiff = Infinity;
-        arr.forEach((v, i) => { const d = Math.abs(v - val); if (d < minDiff) { minDiff = d; idx = i; } });
-        return idx;
+    // Peca de baixo mede pela cintura; o resto mede pelo busto.
+    function detectProduct(name) {
+        var t = (name || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        if (/\b(calca|pantalona|legging|short|bermuda|saia|pantacourt)\b/.test(t)) return 'bottom';
+        return 'top';
     }
 
+    function pmRecomendarPorAlturaPeso(altura, peso, tipo) {
+        var m = pmEstimarMedidas(altura, peso);
+        var ref = (tipo === 'bottom') ? 'cintura' : 'busto';
+        var v = m[ref];
+        var i = pmFaixa(ref, v);
+        return {
+            tamanho: PM_GRADE[i].label,
+            faixa: PM_GRADE[i],
+            referencia: ref,
+            fora: pmAcimaDaGrade(ref, v) ? 'acima' : (pmAbaixoDaGrade(ref, v) ? 'abaixo' : null)
+        };
+    }
 
-    let recommendedSize = 'M';
-    let currentProduct = { category: 'top', fit: 'regular' };
+    let currentTipo = 'top';
+    let pmRecomendacao = null;
 
-    function calculateFinalSize() {
-        // Feature desativada: não faz mais cálculos de tamanho
-        return;
+    function applyProduct(tipo) { currentTipo = tipo; }
+
+    function pmLerMedidas() {
+        var a = document.getElementById('q-altura');
+        var p = document.getElementById('q-peso');
+        return {
+            altura: parseFloat(a && a.value) || 0,
+            peso:   parseFloat(p && p.value) || 0
+        };
+    }
+    function pmAlturaOk(v) { return v >= PM_LIMITES.alturaMin && v <= PM_LIMITES.alturaMax; }
+    function pmPesoOk(v)   { return v >= PM_LIMITES.pesoMin  && v <= PM_LIMITES.pesoMax; }
+    function pmMedidasValidas(m) { return pmAlturaOk(m.altura) && pmPesoOk(m.peso); }
+
+    const PM_LS_MEDIDAS = 'pl_pm_medidas';
+
+    // Roda no clique em Provar: congela a recomendacao que a tela de resultado usa.
+    function calcularTamanho() {
+        var m = pmLerMedidas();
+        if (!pmMedidasValidas(m)) { pmRecomendacao = null; return null; }
+        pmRecomendacao = pmRecomendarPorAlturaPeso(m.altura, m.peso, currentTipo);
+        try { localStorage.setItem(PM_LS_MEDIDAS, JSON.stringify(m)); } catch (_) {}
+        return pmRecomendacao;
     }
 
 
@@ -333,6 +365,50 @@
         }
         .q-input:focus { border-color: var(--c-ink); background: #fff; }
         .q-input::placeholder { color: #bbb; }
+
+        /* ── Altura e peso (recomendacao de tamanho) ── */
+        .q-measure-wrap { margin-bottom: 28px; }
+        .q-measure-row { display: flex; gap: 12px; }
+        .q-measure-field { position: relative; flex: 1; }
+        .q-measure-field .q-input { padding-right: 46px; }
+        .q-measure-field input::-webkit-outer-spin-button,
+        .q-measure-field input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        .q-measure-field input[type=number] { -moz-appearance: textfield; }
+        .q-measure-unit {
+            position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
+            font-size: 13px; font-weight: 600; color: var(--c-muted); pointer-events: none;
+        }
+        .q-measure-hint {
+            font-size: 11px; color: var(--c-muted);
+            margin-top: 8px; letter-spacing: 0.3px; line-height: 1.5;
+        }
+
+        /* ── Tamanho recomendado (tela de resultado) ── */
+        .q-size-rec {
+            border: 1.5px solid var(--c-ink); border-radius: 14px;
+            padding: 14px 16px; margin-bottom: 10px; text-align: left;
+        }
+        .q-size-rec-label {
+            display: block; font-size: 10px; font-weight: 600; letter-spacing: 2px;
+            text-transform: uppercase; color: var(--c-muted); margin-bottom: 5px;
+        }
+        .q-size-rec-value {
+            display: block; font-family: var(--font-display);
+            font-size: 26px; font-weight: 400; letter-spacing: 1px;
+            color: var(--c-ink); line-height: 1.1;
+        }
+        .q-size-rec-detail {
+            display: block; font-size: 12px; color: var(--c-muted);
+            margin-top: 6px; line-height: 1.5;
+        }
+        .q-size-rec-aviso {
+            display: block; font-size: 12px; color: var(--c-danger);
+            font-weight: 600; margin-top: 6px; line-height: 1.45;
+        }
+        .q-size-rec-note {
+            display: block; font-size: 11px; color: var(--c-muted);
+            margin-top: 8px; line-height: 1.45;
+        }
 
         .q-provas-msg:empty { display: none; }
         .q-provas-msg {
@@ -883,6 +959,22 @@
                             <div id="q-provas-restantes" class="q-provas-msg"></div>
                         </div>
 
+                        <!-- Altura e peso (recomendacao de tamanho) -->
+                        <div class="q-measure-wrap">
+                            <span class="q-field-label">Altura e peso<span class="q-required-mark">*</span></span>
+                            <div class="q-measure-row">
+                                <div class="q-measure-field">
+                                    <input type="number" id="q-altura" class="q-input" placeholder="165" min="130" max="210" inputmode="numeric">
+                                    <span class="q-measure-unit">cm</span>
+                                </div>
+                                <div class="q-measure-field">
+                                    <input type="number" id="q-peso" class="q-input" placeholder="70" min="35" max="220" inputmode="numeric">
+                                    <span class="q-measure-unit">kg</span>
+                                </div>
+                            </div>
+                            <div class="q-measure-hint">Usamos s&#243; para recomendar o seu tamanho.</div>
+                        </div>
+
                         <!-- Photo section -->
                         <p class="q-section-label">Envie sua foto</p>
 
@@ -969,6 +1061,13 @@
                                 <div class="q-result-prodprice" id="q-result-prodprice"></div>
                                 <div class="q-result-installment" id="q-result-installment"></div>
                                 <div class="q-scarcity" id="q-scarcity" style="display:none;"><i class="ph-bold ph-fire"></i> APENAS <strong id="q-scarcity-n"></strong>&nbsp;UNIDADES RESTANTES</div>
+                            </div>
+                            <div class="q-size-rec" id="q-size-rec" style="display:none;">
+                                <span class="q-size-rec-label">Tamanho recomendado</span>
+                                <span class="q-size-rec-value" id="q-size-rec-value"></span>
+                                <span class="q-size-rec-detail" id="q-size-rec-detail"></span>
+                                <span class="q-size-rec-aviso" id="q-size-rec-aviso" style="display:none;"></span>
+                                <span class="q-size-rec-note">Estimativa a partir da sua altura e peso, na grade da loja.</span>
                             </div>
                             <div class="q-seals" id="q-seals" style="display:none;">
                                 <div class="q-seal"><i class="ph-fill ph-shield-check"></i><span>Compra<br>Segura</span></div>
@@ -1179,6 +1278,28 @@
         var sc = document.getElementById('q-scarcity');
         var scn = document.getElementById('q-scarcity-n');
         if (sc && scn && (prodName || '').trim()) { scn.textContent = scarcityCount(prodName); sc.style.display = 'flex'; }
+        // Tamanho recomendado (grade oficial da loja)
+        var szBox = document.getElementById('q-size-rec');
+        if (szBox) {
+            if (pmRecomendacao) {
+                var f = pmRecomendacao.faixa;
+                document.getElementById('q-size-rec-value').textContent = pmRecomendacao.tamanho;
+                document.getElementById('q-size-rec-detail').textContent =
+                    'Equivale a busto ' + f.busto[0] + '-' + f.busto[1] + ' cm, cintura '
+                    + f.cintura[0] + '-' + f.cintura[1] + ' cm e quadril '
+                    + f.quadril[0] + '-' + f.quadril[1] + ' cm.';
+                var av = document.getElementById('q-size-rec-aviso');
+                av.textContent = pmRecomendacao.fora === 'acima'
+                    ? 'Suas medidas ficam acima da nossa grade \u2014 fale com a loja antes de comprar.'
+                    : (pmRecomendacao.fora === 'abaixo'
+                        ? 'Suas medidas ficam abaixo da nossa grade \u2014 fale com a loja antes de comprar.'
+                        : '');
+                av.style.display = pmRecomendacao.fora ? 'block' : 'none';
+                szBox.style.display = 'block';
+            } else {
+                szBox.style.display = 'none';
+            }
+        }
         // Notificações de compra: desativadas em todos os provadores
         btn.style.display = 'flex';
         if (trust) trust.style.display = 'flex';
@@ -1448,6 +1569,21 @@
             }
         }
         phoneInput.addEventListener('blur', _savePhoneIfValid);
+
+        // ── Pre-preenche altura/peso da ultima prova (localStorage) ──
+        try {
+            var _pmSaved = JSON.parse(localStorage.getItem(PM_LS_MEDIDAS) || 'null');
+            if (_pmSaved && pmMedidasValidas(_pmSaved)) {
+                var _pmA = document.getElementById('q-altura');
+                var _pmP = document.getElementById('q-peso');
+                if (_pmA) _pmA.value = _pmSaved.altura;
+                if (_pmP) _pmP.value = _pmSaved.peso;
+            }
+        } catch (_) {}
+        ['q-altura', 'q-peso'].forEach(function (id) {
+            var el = document.getElementById(id);
+            if (el) el.addEventListener('input', function () { el.classList.remove('is-error'); });
+        });
         const preImg      = document.getElementById('q-pre-img');
         const facePlaceholder = document.getElementById('q-face-placeholder');
 
@@ -1700,11 +1836,6 @@
             return _r;
         };
 
-
-
-        function applyProduct(product) {
-            currentProduct = product;
-        }
 
 
         openBtn.onclick = (e) => {
@@ -2273,7 +2404,7 @@ const fd = new FormData();
                         } catch (_) { }
                     }
 
-                    calculateFinalSize();
+                    calcularTamanho();
 
                     const res = await fetch(WEBHOOK_PROVA, { method: 'POST', body: fd });
 
@@ -2334,6 +2465,17 @@ const fd = new FormData();
             var _vFaceFrame = document.getElementById('q-face-frame');
             var _vTerms = document.getElementById('q-accept-terms');
             if (!_vPhoneOk) { flashError(phoneInput, 'Preencha seu WhatsApp para continuar'); return; }
+            if (PM_SIZE_OBRIGATORIO) {
+                var _vMed = pmLerMedidas();
+                if (!pmAlturaOk(_vMed.altura)) {
+                    flashError(document.getElementById('q-altura'), 'Preencha sua altura em cm (ex: 165)');
+                    return;
+                }
+                if (!pmPesoOk(_vMed.peso)) {
+                    flashError(document.getElementById('q-peso'), 'Preencha seu peso em kg (ex: 70)');
+                    return;
+                }
+            }
             if (!userPhoto) { flashError(_vFaceFrame, 'Envie ou tire sua foto para continuar'); return; }
             if (_vTerms && !_vTerms.checked) { flashError(document.querySelector('.q-terms-row'), 'Aceite os termos para continuar'); return; }
             // Confirmação das orientações (luz boa / corpo todo / com roupa):
@@ -2343,6 +2485,9 @@ const fd = new FormData();
             var _vHint = document.getElementById('q-validation-hint');
             if (_vHint) _vHint.classList.remove('is-visible');
             phoneInput.classList.remove('is-error');
+            ['q-altura', 'q-peso'].forEach(function (id) {
+                var el = document.getElementById(id); if (el) el.classList.remove('is-error');
+            });
             if (_vFaceFrame) _vFaceFrame.classList.remove('is-error');
 
             if (!userPhoto) return;
