@@ -956,7 +956,6 @@
                             <span class="q-field-label">Seu WhatsApp<span class="q-required-mark">*</span></span>
                             <input type="tel" id="q-phone" class="q-input" placeholder="(11) 99999-9999" maxlength="15">
                             <div id="q-phone-error" class="q-status-msg">N&#250;mero inv&#225;lido</div>
-                            <div id="q-provas-restantes" class="q-provas-msg"></div>
                         </div>
 
                         <!-- Altura e peso (recomendacao de tamanho) -->
@@ -973,6 +972,7 @@
                                 </div>
                             </div>
                             <div class="q-measure-hint">Usamos s&#243; para recomendar o seu tamanho.</div>
+                            <div id="q-provas-restantes" class="q-provas-msg"></div>
                         </div>
 
                         <!-- Photo section -->
