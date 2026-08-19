@@ -394,16 +394,12 @@
             justify-content: space-between; gap: 10px;
         }
         .q-size-rec-label {
-            font-size: 9.5px; font-weight: 600; letter-spacing: 1.6px;
-            text-transform: uppercase; color: var(--c-muted); white-space: nowrap;
+            font-size: 9.5px; font-weight: 700; letter-spacing: 1.6px;
+            text-transform: uppercase; color: var(--c-ink); white-space: nowrap;
         }
         .q-size-rec-value {
             font-family: var(--font-display); font-size: 19px; font-weight: 400;
             letter-spacing: 0.5px; color: var(--c-ink); line-height: 1; white-space: nowrap;
-        }
-        .q-size-rec-detail {
-            display: block; font-size: 10.5px; color: var(--c-muted);
-            margin-top: 4px; line-height: 1.4;
         }
         .q-size-rec-aviso {
             display: block; font-size: 10.5px; color: var(--c-danger);
@@ -1061,7 +1057,6 @@
                                     <span class="q-size-rec-label">Tamanho recomendado</span>
                                     <span class="q-size-rec-value" id="q-size-rec-value"></span>
                                 </div>
-                                <span class="q-size-rec-detail" id="q-size-rec-detail"></span>
                                 <span class="q-size-rec-aviso" id="q-size-rec-aviso" style="display:none;"></span>
                             </div>
                             <div class="q-result-prodinfo" id="q-result-prodinfo" style="display:none;">
@@ -1283,12 +1278,7 @@
         var szBox = document.getElementById('q-size-rec');
         if (szBox) {
             if (pmRecomendacao) {
-                var f = pmRecomendacao.faixa;
                 document.getElementById('q-size-rec-value').textContent = pmRecomendacao.tamanho;
-                document.getElementById('q-size-rec-detail').textContent =
-                    'Estimado \u00b7 busto ' + f.busto[0] + '-' + f.busto[1]
-                    + ' \u00b7 cintura ' + f.cintura[0] + '-' + f.cintura[1]
-                    + ' \u00b7 quadril ' + f.quadril[0] + '-' + f.quadril[1] + ' cm';
                 var av = document.getElementById('q-size-rec-aviso');
                 av.textContent = pmRecomendacao.fora
                     ? 'Fora da nossa grade \u2014 fale com a loja antes de comprar.'
