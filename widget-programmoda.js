@@ -1,4 +1,7 @@
 (function () {
+    // ── PROVADOR PAUSADO (19/08/2026, a pedido do Lucas) ──
+    // Para religar: remover este bloco (ver commit anterior).
+    return;
 
     // ─── FORA DO PROVADOR: calcados e bolsas (a Luzzi vende roupa, calcado e bolsa) ───
     var PL_RE_BLOQ = /(bota|botina|coturno|sapatilha|sapato|scarpin|mocassim|mocassin|sand[aá]lia|sand|papete|rasteir\w*|flat|t[eê]nis|chinelo|tamanco|mule|slide|anabela|peep\s?toe|salto|bolsa|clutch|mochila|carteira|necess[aá]ire)/i;
