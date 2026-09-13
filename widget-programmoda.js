@@ -1,4 +1,6 @@
 (function () {
+    // Programmoda: provador desativado em 13/09/2026 a pedido do usuario.
+    return;
     // ─── FORA DO PROVADOR: calcados e bolsas (a Luzzi vende roupa, calcado e bolsa) ───
     var PL_RE_BLOQ = /(bota|botina|coturno|sapatilha|sapato|scarpin|mocassim|mocassin|sand[aá]lia|sand|papete|rasteir\w*|flat|t[eê]nis|chinelo|tamanco|mule|slide|anabela|peep\s?toe|salto|bolsa|clutch|mochila|carteira|necess[aá]ire)/i;
 
