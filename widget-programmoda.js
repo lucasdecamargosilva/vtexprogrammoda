@@ -1299,6 +1299,9 @@
 
 
     function init() {
+        // ─── KILL SWITCH: provador da Programmoda pausado no front (backend segue ativo) ───
+        var PL_PROVADOR_OFF = true;
+        if (PL_PROVADOR_OFF) return; // religar = mudar para false (ou remover este bloco)
         // --- FILTRO DE CATEGORIA (HAT) ---
         const productNameNormalized = (document.querySelector('[class*="productNameContainer"] h1, h1.product__title, h1')?.innerText || document.title).toUpperCase();
         if (productNameNormalized.includes('HAT')) {
