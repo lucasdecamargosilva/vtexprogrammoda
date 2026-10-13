@@ -904,6 +904,13 @@
             font-family: inherit;
             font-weight: 700; letter-spacing: .4px; font-size: 12.8px;
         }
+        /* Mesmo tamanho do COMPRAR da Programmoda (medido 13/10: 435x48, max-width 435px,
+           min-height 48px, 12.8px/700, line-height 12.8px, padding 0). Fallback fixo;
+           plMatchBuy() copia os valores reais em tempo de execucao. */
+        .q-btn-inline-provador {
+            max-width: 435px; min-height: 48px; height: 48px;
+            padding: 0 16px; line-height: 12.8px; letter-spacing: normal;
+        }
     `;
 
 
@@ -1530,8 +1537,29 @@
         // "Comprar", o React re-renderiza a area de compra e ARRANCA o nosso
         // botao. Se pararmos no primeiro sucesso, ele some e nao volta -- era
         // por isso que so aparecia depois do F5. Nunca limpar este intervalo.
-        plInsereInline();
-        setInterval(plInsereInline, 800);
+        // Copia altura, largura, fonte e borda do COMPRAR (igual Penelope). So estilo.
+        function plMatchBuy() {
+            try {
+                if (!document.body.contains(inlineBtn)) return;
+                var _b = document.querySelector('[class*="add-to-cart-button"] button, [class*="buy-button"] button, .js-addtocart, .btn-add-to-cart');
+                if (!_b) return;
+                var _r = _b.getBoundingClientRect();
+                if (!(_r.height > 0 && _r.width > 0)) return;
+                var _cs = window.getComputedStyle(_b);
+                inlineBtn.style.setProperty('height', _r.height + 'px', 'important');
+                inlineBtn.style.setProperty('min-height', _r.height + 'px', 'important');
+                inlineBtn.style.setProperty('max-width', _r.width + 'px', 'important');
+                inlineBtn.style.setProperty('padding-top', '0', 'important');
+                inlineBtn.style.setProperty('padding-bottom', '0', 'important');
+                ['font-family', 'font-size', 'font-weight', 'letter-spacing', 'line-height', 'text-transform', 'border-radius'].forEach(function (k) {
+                    var _v = _cs.getPropertyValue(k);
+                    if (_v) inlineBtn.style.setProperty(k, _v, 'important');
+                });
+            } catch (_) {}
+        }
+        plInsereInline(); plMatchBuy();
+        setInterval(function () { plInsereInline(); plMatchBuy(); }, 800);
+        window.addEventListener('resize', plMatchBuy);
         // PL: plano do mês estourado (flag bloquear_ao_limite) -> esconde o provador já ao abrir a página
         try {
             fetch(WEBHOOK_CHECK_LIMIT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ modo: 'plano' }) })
