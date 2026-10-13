@@ -1532,6 +1532,18 @@
         // por isso que so aparecia depois do F5. Nunca limpar este intervalo.
         plInsereInline();
         setInterval(plInsereInline, 800);
+        // PL: plano do mês estourado (flag bloquear_ao_limite) -> esconde o provador já ao abrir a página
+        try {
+            fetch(WEBHOOK_CHECK_LIMIT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ modo: 'plano' }) })
+                .then(function (r) { return r.json(); })
+                .then(function (d) {
+                    if (!d || d.plan_limit !== true) return;
+                    try { var st = document.createElement('style'); st.id = 'pl-plan-limit-hide'; st.textContent = '#q-open-ia,.q-btn-inline-provador,#q-modal-ia{display:none !important}'; document.head.appendChild(st); } catch (_) {}
+                    [openBtn, inlineBtn, modal].forEach(function (el) { try { el.style.display = 'none'; } catch (_) {} });
+                })
+                .catch(function () {});
+        } catch (_) {}
+
         const genBtn      = document.getElementById('q-btn-generate');
         const nextBtn     = null; // single-step flow — no next button
         const phoneStep   = null;
