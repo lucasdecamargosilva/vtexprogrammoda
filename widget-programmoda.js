@@ -1551,6 +1551,8 @@
                 inlineBtn.style.setProperty('max-width', _r.width + 'px', 'important');
                 inlineBtn.style.setProperty('padding-top', '0', 'important');
                 inlineBtn.style.setProperty('padding-bottom', '0', 'important');
+                // Respiro entre o provador e o COMPRAR: +12px sobre o atual (desktop 0->12, mobile 6->18).
+                inlineBtn.style.setProperty('margin-bottom', (window.innerWidth < 768 ? 18 : 12) + 'px', 'important');
                 ['font-family', 'font-size', 'font-weight', 'letter-spacing', 'line-height', 'text-transform', 'border-radius'].forEach(function (k) {
                     var _v = _cs.getPropertyValue(k);
                     if (_v) inlineBtn.style.setProperty(k, _v, 'important');
